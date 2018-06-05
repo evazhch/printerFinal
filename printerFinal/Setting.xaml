@@ -1,0 +1,26 @@
+﻿<Window x:Class="printerFinal.Setting"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:printerFinal"
+        mc:Ignorable="d"
+        Title="Setting2" Height="1080" Width="1920" Loaded="Window_Loaded"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" WindowState="Maximized">
+    <Grid>
+        <Grid Background="Black" Opacity="0.2"></Grid>
+        <Grid Width="1120" Height="700" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Image Source="ReSources/picture/setbg.png" Width="1120" Height="700"></Image>
+            <TextBox Text="{Binding Path=Id,Mode=TwoWay}" FontSize="25"  Margin="234,215,604,440" Background="Transparent" BorderThickness="0" />
+            <TextBox Text="{Binding Path=universityCode,Mode=TwoWay}" FontSize="25" Margin="758,215,76,440" Background="Transparent" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=Toner_Cartridge,Mode=TwoWay}" FontSize="25" Margin="234,294,604,358" Background="Transparent" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=position,Mode=TwoWay}" FontSize="25"   Margin="758,294,76,358" Background="Transparent" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=IPposition,Mode=TwoWay}" FontSize="25" Margin="234,372,604,291" Background="Transparent" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=TeamviewerId,Mode=TwoWay}" FontSize="25" Margin="758,372,76,291" Background="Transparent" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=ContactName,Mode=TwoWay}" FontSize="25"  Margin="234,436,604,213" Background="Transparent" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=ContactPhoto,Mode=TwoWay}" FontSize="25" Margin="758,442,76,213" Background="Transparent" BorderThickness="0"/>
+            <Button Name="savebtn" Click="savebtn_Click" Opacity="0" Margin="304,580,282,49"/>
+            <Button Opacity="0" Height="50" Width="50" Margin="1040,53,30,597" Name="closbtn" Click="closbtn_Click"></Button>
+        </Grid>
+    </Grid>
+</Window>

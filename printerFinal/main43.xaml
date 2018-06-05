@@ -1,0 +1,105 @@
+﻿<Window x:Class="printerFinal.main43"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:printerFinal"
+        mc:Ignorable="d"
+        Title="main43" Height="960" Width="1280" WindowState="Maximized" WindowStyle="None" Loaded="MetroWindow_Loaded">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key ="roundButtonTemplate" TargetType ="{x:Type Button}">
+                <Setter Property ="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType ="{x:Type Button}">
+                            <Grid>
+                                <Ellipse Name ="OuterRing" Width ="Auto" Height ="Auto"  Fill ="White" Margin="0,0,0,0" Opacity="0.0"/>
+                                <Ellipse Name ="InnerRing" Width ="Auto" Height ="Auto" Fill ="Transparent" Margin="0,0,0,0"/>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property ="IsMouseOver" Value ="True">
+                                    <Setter TargetName ="OuterRing" Property ="Fill" Value="Green"/>
+                                    <Setter TargetName="OuterRing" Property="Opacity" Value="0.3"/>
+                                </Trigger>
+                                <!--<Trigger Property ="IsPressed" Value ="True">
+                                    <Setter TargetName ="OuterRing" Property ="Height" Value ="42"/>
+                                    <Setter TargetName ="OuterRing" Property ="Width" Value ="42"/>
+                                </Trigger>-->
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key ="recButtonTemplate" TargetType ="{x:Type Button}">
+                <Setter Property ="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType ="{x:Type Button}">
+                            <Grid>
+                                <Rectangle Name ="OuterRing" Width ="200" Height ="60" Fill ="#03926c"/>
+                                <Rectangle Name ="InnerRing" Width ="200" Height ="60" Fill ="#03926c"/>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property ="IsMouseOver" Value ="True">
+                                    <Setter TargetName ="OuterRing" Property ="Fill" Value="White"/>
+                                </Trigger>
+                                <Trigger Property ="IsPressed" Value ="True">
+                                    <Setter TargetName ="InnerRing" Property ="Height" Value ="56"/>
+                                    <Setter TargetName ="InnerRing" Property ="Width" Value ="196"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70*"></RowDefinition>
+            <RowDefinition Height="410*"></RowDefinition>
+            <RowDefinition Height="410*"></RowDefinition>
+            <RowDefinition Height="70*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="840*"></ColumnDefinition>
+            <ColumnDefinition Width="440*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Image Source="Resources\picture\maintop.png"  Stretch="UniformToFill" Margin="0,0,0,0" Grid.Row="0" Grid.ColumnSpan="2"></Image>
+        <Viewbox Stretch="UniformToFill" Grid.ColumnSpan="2" Grid.Row="0">
+            <Canvas Width="1920" Height="120">
+                <TextBlock Height="120" Foreground="White" FontSize="40" Canvas.Left="1623" Canvas.Top="9" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch"><Run FontSize="45" Name="unName">西南交通大学</Run><LineBreak/><Run FontSize="19" Name="unEName">Southwest Jiaotong University</Run></TextBlock>
+            </Canvas>
+        </Viewbox>
+        <Image Grid.Row="1" Source="Resources\picture\bg2.png" Stretch="Fill" Margin="0,0,0,0"></Image>
+        <Image Name="adwin" Canvas.Left="1260" Grid.Column="1" Grid.Row="1" Stretch="UniformToFill"></Image>
+        <Image Source="Resources\picture\mainmain43.png" Grid.Row="2" Margin="0,0,0,0" Stretch="Uniform"></Image>
+        <Frame Grid.Row="2" Grid.Column="1"  Name="fram"  Margin="0,0,0,0" NavigationUIVisibility="Hidden"></Frame>
+        <Image Grid.Row="3" Grid.ColumnSpan="2" Margin="0,0,0,0" Source="Resources\picture\mainbotom.png" Stretch="Fill"></Image>
+        <Viewbox Grid.Row="2" Stretch="Uniform">
+            <Canvas Margin="0,0,0,0" Width="840" Height="410" >
+                <TextBox Foreground="Gray" Grid.Row="2" Background="White" BorderThickness="0" Name="textBox" GotFocus="textBox_GotFocus" FontSize="40" Width="412" Height="56" Canvas.Left="120" Canvas.Top="120" >
+                    请输入学号
+                </TextBox>
+                <TextBox Foreground="Gray" Grid.Row="2" Background="White" BorderThickness="0" Name="textBox1" Width="412"  GotFocus="textBox1_GotFocus" FontSize="40"  Height="52" Canvas.Left="120" Canvas.Top="220"  >
+                    请输入验证码
+                </TextBox>
+                <Button Grid.Row="2" Width="174" Click="rightbtn_Click"  Name="rightbtn" 
+                        Height="171"
+                        Style="{DynamicResource roundButtonTemplate}" Canvas.Left="614" Canvas.Top="133"
+                        />
+                <TextBlock Name="netLine" Foreground="Green" FontSize="30" Canvas.Left="10" Canvas.Top="362">网络已连接</TextBlock>
+
+                <TextBlock  Foreground="Green" FontSize="30" Canvas.Left="240" Canvas.Top="362"><Run>剩余纸张:</Run><Run Foreground="Red" Name="pageRemain"></Run></TextBlock>
+                <TextBlock  Foreground="Green" FontSize="30" Canvas.Left="493" Canvas.Top="362"><Run>打印机:</Run><Run Foreground="Red" Name="printerStaTxt"></Run></TextBlock>
+
+            </Canvas>
+        </Viewbox>
+    </Grid>
+</Window>

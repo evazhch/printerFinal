@@ -1,0 +1,105 @@
+﻿<Window x:Class="printerFinal.helpPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:printerFinal"
+        mc:Ignorable="d"
+        Title="helpPage"  Width="1920" Height="1080"
+       WindowStyle="None" AllowsTransparency="True" Background="Transparent" WindowState="Maximized"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key ="roundButtonTemplate" TargetType ="{x:Type Button}">
+                <Setter Property ="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType ="{x:Type Button}">
+                            <Grid>
+                                <Ellipse Name ="OuterRing" Width ="60" Height ="60" Fill ="White"/>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="ProgressBarStyle" TargetType="ProgressBar">
+                <Setter Property="Background" Value="#202020"></Setter>
+                <Setter Property="Orientation" Value="Horizontal"></Setter>
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ProgressBar">
+                            <Grid>
+                                <!--背景框-->
+                                <Rectangle x:Name="BacRec" Margin="{TemplateBinding Padding}" VerticalAlignment="Stretch" Height="Auto" StrokeThickness="0" Stroke="#FF7C8C9A" RadiusX="8" RadiusY="8" Fill="{TemplateBinding Background}" />
+                                <!--进度低槽     不要改这个DockPanel的名字-->
+                                <DockPanel x:Name="PART_Track"  LastChildFill="false">
+                                    <!--进度填充条     不要改这个Rec的名字-->
+                                    <Rectangle  x:Name="PART_Indicator" Margin="0" RadiusX="{Binding ElementName=BacRec,Path=RadiusX}" RadiusY="{Binding ElementName=BacRec,Path=RadiusY}">
+                                        <Rectangle.Fill>
+                                            <!--想要啥颜色 自己设置好了-->
+
+                                            <LinearGradientBrush StartPoint="0,1" EndPoint="1,1">
+                                                <GradientStop Color="Green" Offset="0.0"/>
+                                                <GradientStop Color="GreenYellow" Offset="0.5"/>
+                                                <GradientStop Color="LightGreen" Offset="1.0"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </DockPanel>
+                                <!--边缘的一像素高光-->
+                                <Rectangle Margin="0" Height="Auto" Stroke="#33d37128" Opacity="0.25" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+
+    </Window.Resources>
+    <Grid>
+        <Grid Background="Black" Opacity="0.5">
+        </Grid>
+        <Grid Width="1130" Height="763" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="1.0">
+
+            <Image Width="1130" Height="763" Stretch="Fill" Source="Resources\picture\printinghelpbg.png"></Image>
+            <Button Click="Button_Click_1" Name="closebtn"
+                        Style="{DynamicResource roundButtonTemplate}"  Margin="1035,80,15,620"
+                        >
+                <Rectangle Width="33"
+                               Height="33"
+                               Fill="#04b686">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                                         Visual="{DynamicResource appbar_close}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+
+            <TextBlock FontSize="30" Foreground="#04b686" VerticalAlignment="Center" Margin="426,210,394,514"><Run Foreground="Black">欢迎使用自助打印服务</Run></TextBlock>
+            <TextBlock Margin="354,254,329,392" FontSize="30"  TextWrapping="Wrap" TextAlignment="Center">
+                <Run Foreground="AliceBlue">请先使用微信小程序下单</Run><LineBreak/>
+                <Run Foreground="AliceBlue">正确输入学号和验证码</Run><LineBreak/>
+                <Run Foreground="AliceBlue">点击确认按钮将自动开始打印</Run>
+            </TextBlock>
+            <TextBlock FontSize="30" Foreground="#04b686" VerticalAlignment="Center" Margin="150,458,517,267"><Run Text="{Binding name}"></Run><Run>同学，</Run><Run Foreground="Black">欢迎使用自助打印服务</Run></TextBlock>
+            <TextBlock FontSize="30" Foreground="Gray" VerticalAlignment="Center" Margin="150,512,517,213"><Run>共监测到可打印类型：</Run><Run Foreground="Red" Name="coutRun"></Run><Run Foreground="Red">种</Run></TextBlock>
+            <TextBlock FontSize="30" Foreground="Gray" VerticalAlignment="Center" Margin="150,568,517,157"><Run>打印类别为：</Run><Run Foreground="Blue" Name="jobstr"> </Run></TextBlock>
+            <TextBlock Background="AliceBlue" x:Name="textBlock" FontSize="20" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="634,458,0,0" VerticalAlignment="Top" Height="148" Width="461"/>
+            <Label x:Name="label" Content="问题反馈" HorizontalAlignment="Left" Margin="634,405,0,0" VerticalAlignment="Top" FontSize="22"/>
+            <Button x:Name="button" Content="打印出错" HorizontalAlignment="Left" Margin="634,611,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+            <Button x:Name="button1" Content="没有出纸" HorizontalAlignment="Left" Margin="714,611,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+            <Button x:Name="button2" Content="打印效果不佳" HorizontalAlignment="Left" Margin="714,643,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+            <Button x:Name="button2_Copy" Content="软件没反应" HorizontalAlignment="Left" Margin="794,611,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+            <Button x:Name="button2_Copy1" Content="打印种类太少" HorizontalAlignment="Left" Margin="874,611,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+            <Button x:Name="button2_Copy2" Content="打印样式出错" HorizontalAlignment="Left" Margin="954,611,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+            <Button x:Name="button2_Copy3" Content="打印信息出错" HorizontalAlignment="Left" Margin="634,643,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+        </Grid>
+    </Grid>
+</Window>
