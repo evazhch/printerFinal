@@ -81,11 +81,11 @@
                 </Rectangle>
             </Button>
 
-            <TextBlock FontSize="25" Foreground="Yellow" Margin="901,295,104,430" ><Run Name="nowCountText"></Run><Run>份</Run><Run Foreground="White">/</Run><Run Text="{Binding Count}" Foreground="White"></Run><Run Foreground="White">份</Run></TextBlock>
+            <TextBlock FontSize="25" Foreground="Yellow" Margin="901,295,104,430" ><Run Name="nowCountText" Text="0"></Run><Run>份</Run><Run Foreground="White">/</Run><Run Text="{Binding Count}" Foreground="White"></Run><Run Foreground="White">份</Run></TextBlock>
             <ProgressBar Style="{DynamicResource ProgressBarStyle}" Name="progress" Minimum="0" Maximum="100" HorizontalAlignment="Left" Foreground="Yellow" Background="White" Height="17" Margin="81,245,0,0" VerticalAlignment="Top" Width="945"/>
             <TextBlock FontSize="30" Foreground="#04b686" VerticalAlignment="Center" Margin="150,320,60,130"><Run Text="{Binding studentName}"></Run><Run>同学，</Run><Run Foreground="Black">欢迎使用自助打印服务</Run></TextBlock>
             <TextBlock FontSize="30" Foreground="Gray" VerticalAlignment="Center" Margin="150,400,60,100"><Run>共监测到打印份数：</Run><Run Foreground="Red" Text="{Binding Count}"></Run><Run Foreground="Red">份</Run></TextBlock>
-            <TextBlock FontSize="30" Foreground="Gray" VerticalAlignment="Center" Margin="150,480,60,70"><Run>打印类别：</Run><Run Foreground="Blue" Text="{Binding jobstype}"> </Run></TextBlock>
+            <TextBlock FontSize="30" Foreground="Gray" VerticalAlignment="Center" Margin="150,480,60,70" TextWrapping="Wrap"><Run>打印类别：</Run><Run Foreground="Blue" Text="{Binding jobstype}"> </Run></TextBlock>
         </Grid>
     </Grid>
 

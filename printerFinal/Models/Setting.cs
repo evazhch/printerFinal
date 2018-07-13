@@ -42,7 +42,7 @@ namespace printerFinal.Models
             IPposition = ConfigurationManager.AppSettings["IPposition"];
             TeamviewerId = ConfigurationManager.AppSettings["TeamviewerId"];
             ContactName = ConfigurationManager.AppSettings["ContactName"];
-            ContactPhone = ConfigurationManager.AppSettings["ContactPhoto"];
+            ContactPhone = ConfigurationManager.AppSettings["ContactPhone"];
             nowStatus = ConfigurationManager.AppSettings["nowStatus"];
         }
     }

@@ -62,10 +62,10 @@ namespace printerFinal
             dtimer.Start();
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
-            Button bt = sender as Button;
-            textBlock.Text +=" "+bt.Content;
-        }
+        //private void button_Click(object sender, RoutedEventArgs e)
+        //{
+        //    Button bt = sender as Button;
+        //    textBlock.Text +=" "+bt.Content;
+        //}
     }
 }

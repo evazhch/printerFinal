@@ -44,7 +44,7 @@ namespace printerFinal
                 configbll.SaveConfig("TeamviewerId", App.set.TeamviewerId);
 
                 configbll.SaveConfig("ContactName", App.set.ContactName);
-                configbll.SaveConfig("ContactPhoto", App.set.ContactPhone);
+                configbll.SaveConfig("ContactPhone", App.set.ContactPhone);
 
                 //BLL.ConfigBLL.SaveConfig("code", App.set.code);
                 //BLL.ConfigBLL.SaveConfig("nowStatus", App.set.nowStatus);
@@ -65,7 +65,7 @@ namespace printerFinal
                        + " IPposition:" + ConfigurationManager.AppSettings["IPposition"] + " "
                        + " TeamviewerId:" + ConfigurationManager.AppSettings["TeamviewerId"] + " "
                        + " ContactName:" + ConfigurationManager.AppSettings["ContactName"] + " "
-                       + " ContactPhoto:" + ConfigurationManager.AppSettings["ContactPhoto"] + " ";
+                       + " ContactPhone:" + ConfigurationManager.AppSettings["ContactPhoto"] + " ";
                 logbll.AddLog(log, ConfigurationManager.AppSettings["logFile"]);
 
 
@@ -81,8 +81,8 @@ namespace printerFinal
 
         private void closbtn_Click(object sender, RoutedEventArgs e)
         {
-            Start start = new Start();
-            start.Show();
+            //Start start = new Start();
+            //start.Show();
             this.Close();
         }
 

@@ -32,10 +32,18 @@ namespace printerFinal
         public System.Windows.Threading.DispatcherTimer stadtimer; //机器状态定时器
         JSONBLL jsonbll = new JSONBLL();
         private delegate void DoPrintMethod(PrintDialog pdlg, DocumentPaginator paginator, string name, int num);
+
         enum Jobs
         {
             成绩单 = 1,
-            学籍证明
+            学籍证明,
+            英语等级证明,
+            毕业证明,
+            双学位成绩单,
+            学位证明,
+            双学位证明,
+            辅修证明,
+            出国成绩单
         }
         struct Appstat
         {
@@ -195,6 +203,8 @@ namespace printerFinal
                 PrintServer ps = new PrintServer();
                 PrintQueue queue = ps.GetPrintQueue(ConfigurationManager.AppSettings["printer"]);
                 printerStaTxt.Text = queue.QueueStatus.ToString();
+                ps.Dispose();
+                queue.Dispose();
             }
             catch
             {
@@ -378,6 +388,8 @@ namespace printerFinal
                 foreach (detail_m detail in details)
                 {
                     string a = detail.printTypeName;
+                    //if (a == "CGCJ") //测试用
+                    //{
                     string url = ConfigurationManager.AppSettings[a];
 
                     App.psta.Count += detail.printNum;
@@ -407,6 +419,7 @@ namespace printerFinal
                         MessageBox.Show("请联系管理员检查配置有无相应模版或其他错误", "无法加载模板");
                         return;
                     }
+                    //}
                 }
 
                 PrintingPage ppg = new PrintingPage();
@@ -427,31 +440,27 @@ namespace printerFinal
         private int getDoc(string url, string type, JObject data, string name, int num)
         {
             PrintDialog pd = new PrintDialog();
-            if (type == "CJD")
+            PrintBLL pl = new PrintBLL();
+            pl.SetPrintProperty(pd);
+
+            PrintBLL printbll = new PrintBLL();
+
+            FlowDocument doc = printbll.LoadDocument(type, url, data);
+
+            if (doc != null)
             {
-                FlowDocument doc = BLL.PrintBLL.loadSorceDocument(url, data);
-                if (doc != null)
-                {
-                    Dispatcher.BeginInvoke(new DoPrintMethod(DoPrint), DispatcherPriority.ApplicationIdle, pd, ((IDocumentPaginatorSource)doc).DocumentPaginator, name, num);
-                    return 0;
-                }
-                else
-                {
-                    return 1;
-                }
+                doc.PageHeight = pd.PrintableAreaHeight;
+                doc.PageWidth = pd.PrintableAreaWidth;
+                doc.PagePadding = new Thickness(50);
+                doc.ColumnGap = 0;
+                doc.ColumnWidth = pd.PrintableAreaWidth;
+
+                Dispatcher.BeginInvoke(new DoPrintMethod(DoPrint), DispatcherPriority.ApplicationIdle, pd, ((IDocumentPaginatorSource)doc).DocumentPaginator, name, num);
+                return 0;
             }
-            else //其他不需要动态生成文档
+            else
             {
-                FlowDocument doc = BLL.PrintBLL.LoadDocument(url, data);
-                if (doc != null)
-                {
-                    Dispatcher.BeginInvoke(new DoPrintMethod(DoPrint), DispatcherPriority.ApplicationIdle, pd, ((IDocumentPaginatorSource)doc).DocumentPaginator, name, num);
-                    return 0;
-                }
-                else
-                {
-                    return 1;
-                }
+                return 1;
             }
         }
         /// <summary>
@@ -463,8 +472,8 @@ namespace printerFinal
         /// <param name="num"></param>
         private void DoPrint(PrintDialog pdlg, DocumentPaginator paginator, string name, int num)
         {
-            for (int i = 0; i < num; i++)
-                pdlg.PrintDocument(paginator, name);
+            //for(int i=0;i<num;i++)                
+            pdlg.PrintDocument(paginator, name);
         }
         /// <summary>
         /// 得到打印信息新

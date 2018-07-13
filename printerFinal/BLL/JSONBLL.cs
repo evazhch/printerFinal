@@ -29,7 +29,7 @@ namespace printerFinal.BLL
             catch (Exception ex)
             {
                 jo = null;
-                MessageBox.Show(ex.Message);
+                //MessageBox.Show(ex.Message);
                 return ex.HResult;
             }
             return 0;
@@ -41,7 +41,7 @@ namespace printerFinal.BLL
         /// <param name="inquireStr"></param>
         /// <param name="newJo"></param>
         /// <returns></returns>
-        public int jobjectDisassem(object jo, string inquireStr, out JObject newJo)
+        public int jobjectDisassem(JObject jo, string inquireStr, out JObject newJo)
         {
             JObject ja = (JObject)jo;
             try
@@ -51,7 +51,7 @@ namespace printerFinal.BLL
             catch (Exception ex)
             {
                 newJo = null;
-                MessageBox.Show(ex.Message);
+                //MessageBox.Show(ex.Message);
                 return ex.HResult;
             }
             return 0;
@@ -73,7 +73,7 @@ namespace printerFinal.BLL
             catch (Exception ex)
             {
                 newJo = null;
-                MessageBox.Show(ex.Message);
+                //MessageBox.Show(ex.Message);
                 return ex.HResult;
             }
             return 0;
@@ -101,7 +101,7 @@ namespace printerFinal.BLL
             catch (Exception ex)
             {
                 jo = null; //有问题资源浪费
-                MessageBox.Show(ex.Message);
+                //MessageBox.Show(ex.Message);
                 return ex.HResult;
             }
             return 0;
@@ -129,7 +129,7 @@ namespace printerFinal.BLL
             catch (Exception ex)
             {
                 jo = null; //有问题资源浪费
-                MessageBox.Show(ex.Message);
+                //MessageBox.Show(ex.Message);
                 return ex.HResult;
             }
             return 0;
@@ -157,7 +157,7 @@ namespace printerFinal.BLL
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+               // MessageBox.Show(ex.Message);
                 return ex.HResult;
             }
             return 0;

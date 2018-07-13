@@ -90,16 +90,16 @@
             </TextBlock>
             <TextBlock FontSize="30" Foreground="#04b686" VerticalAlignment="Center" Margin="150,458,517,267"><Run Text="{Binding name}"></Run><Run>同学，</Run><Run Foreground="Black">欢迎使用自助打印服务</Run></TextBlock>
             <TextBlock FontSize="30" Foreground="Gray" VerticalAlignment="Center" Margin="150,512,517,213"><Run>共监测到可打印类型：</Run><Run Foreground="Red" Name="coutRun"></Run><Run Foreground="Red">种</Run></TextBlock>
-            <TextBlock FontSize="30" Foreground="Gray" VerticalAlignment="Center" Margin="150,568,517,157"><Run>打印类别为：</Run><Run Foreground="Blue" Name="jobstr"> </Run></TextBlock>
-            <TextBlock Background="AliceBlue" x:Name="textBlock" FontSize="20" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="634,458,0,0" VerticalAlignment="Top" Height="148" Width="461"/>
-            <Label x:Name="label" Content="问题反馈" HorizontalAlignment="Left" Margin="634,405,0,0" VerticalAlignment="Top" FontSize="22"/>
+            <TextBlock FontSize="30" Foreground="Gray" VerticalAlignment="Center" Margin="150,568,26,57" TextWrapping="Wrap"  Height="138"><Run>打印类别为：</Run><Run Foreground="Blue" Name="jobstr"> </Run></TextBlock>
+            <!--<TextBlock Background="AliceBlue" x:Name="textBlock" FontSize="20" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="634,458,0,0" VerticalAlignment="Top" Height="148" Width="461"/>-->
+            <!--<Label x:Name="label" Content="问题反馈" HorizontalAlignment="Left" Margin="634,405,0,0" VerticalAlignment="Top" FontSize="22"/>
             <Button x:Name="button" Content="打印出错" HorizontalAlignment="Left" Margin="634,611,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
             <Button x:Name="button1" Content="没有出纸" HorizontalAlignment="Left" Margin="714,611,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
             <Button x:Name="button2" Content="打印效果不佳" HorizontalAlignment="Left" Margin="714,643,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
             <Button x:Name="button2_Copy" Content="软件没反应" HorizontalAlignment="Left" Margin="794,611,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
             <Button x:Name="button2_Copy1" Content="打印种类太少" HorizontalAlignment="Left" Margin="874,611,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
             <Button x:Name="button2_Copy2" Content="打印样式出错" HorizontalAlignment="Left" Margin="954,611,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
-            <Button x:Name="button2_Copy3" Content="打印信息出错" HorizontalAlignment="Left" Margin="634,643,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+            <Button x:Name="button2_Copy3" Content="打印信息出错" HorizontalAlignment="Left" Margin="634,643,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>-->
         </Grid>
     </Grid>
 </Window>

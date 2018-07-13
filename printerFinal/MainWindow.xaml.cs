@@ -32,12 +32,23 @@ namespace printerFinal
         public System.Windows.Threading.DispatcherTimer adtimer; //广告刷新定时器
         public System.Windows.Threading.DispatcherTimer stadtimer; //机器状态定时器
         JSONBLL jsonbll = new JSONBLL();
-        private delegate void DoPrintMethod(PrintDialog pdlg, DocumentPaginator paginator,string name,int num);
+        //注册打印方法
+        private delegate void DoPrintMethod(PrintDialog pdlg, DocumentPaginator paginator, string name, int num);
+        private delegate void GetAdListMethod(string url, Dictionary<string, string> dic);
+        //打印类型枚举
         enum Jobs
         {
             成绩单 = 1,
-            学籍证明
+            学籍证明,
+            英语等级证明,
+            毕业证明,
+            双学位成绩单,
+            学位证明,
+            双学位证明,
+            辅修证明,
+            出国成绩单
         }
+        //当前打印机状态
         struct Appstat
         {
             public bool line; //网络是否连接
@@ -51,7 +62,7 @@ namespace printerFinal
         }
         List<AdStruct> adList = new List<AdStruct>(); //广告列表变量
         int adnum = 0; //广告的数量
-       
+
         #endregion
         #region 广告及状态处理方法
         /// <summary>
@@ -59,7 +70,7 @@ namespace printerFinal
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public List<AdStruct> getAdList(string url,Dictionary<string,string> dic)
+        public void getAdList(string url, Dictionary<string, string> dic)
         {
             HttpBLL httpbll = new HttpBLL();
             List<AdStruct> list = new List<AdStruct>();
@@ -68,12 +79,13 @@ namespace printerFinal
 
             if (str != null)
             {
+                //反序列化Json数据
                 JObject jo = JsonConvert.DeserializeObject<JObject>(str);
-                
 
                 if (jo["code"].ToString() == "200")
                 {
                     var ja = jo["ad"];
+                    //将广告添加至广告list
                     foreach (var a in ja)
                     {
                         AdStruct adstruct = new AdStruct();
@@ -81,30 +93,35 @@ namespace printerFinal
                         adstruct.url = a["adUrl"].ToString();
                         list.Add(adstruct);
                     }
-                    return list;
+                    this.adList=list;
                 }
                 else
                 {
-                    return list;
+                    this.adList= list;
                 }
             }
             else
             {
-                return list;
+                this.adList=list;
             }
         }
         /// <summary>
-        ///   定时刷新
+        ///  定时刷新从新生成窗口
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void dtimer_Tick(object sender, EventArgs e)
         {
+            //主计时器停止
             dtimer.Stop();
+            //广告计时器停止
             adtimer.Stop();
+            //状态更新计时器停止
             stadtimer.Stop();
+            //生成新的主窗口
             MainWindow mv = new MainWindow();
             mv.Show();
+            //旧窗口关闭
             this.Close();
         }
         /// <summary>
@@ -124,7 +141,7 @@ namespace printerFinal
             //检查网络连接
             try
             {
-                System.Net.NetworkInformation.PingReply reply = p.Send("baidu.com", timeout, buffer, options);
+                System.Net.NetworkInformation.PingReply reply = p.Send("www.baidu.com", timeout, buffer, options);
                 if (reply.Status == System.Net.NetworkInformation.IPStatus.Success)
                 {
                     stat.line = true;
@@ -138,8 +155,9 @@ namespace printerFinal
                     netLine.Foreground = Brushes.Red;
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                MessageBox.Show(ex.Message);
                 stat.line = false;
                 netLine.Text = "网络异常，请联系管理员";
                 netLine.Foreground = Brushes.Red;
@@ -189,19 +207,36 @@ namespace printerFinal
                 stat.stat = "连接失败";
             }
 
+            serverLine.Text = stat.stat;
+
             pageRemain.Text = App.set.remainPageNum.ToString();
+            if( int.Parse(pageRemain.Text.ToString())<100)
+            {
+                pageRemain.Foreground = Brushes.Red;
+            }
 
             try
             {
                 PrintServer ps = new PrintServer();
                 PrintQueue queue = ps.GetPrintQueue(ConfigurationManager.AppSettings["printer"]);
-                printerStaTxt.Text = queue.QueueStatus.ToString();
+                string str1="";
+                SpotTroubleUsingQueueAttributes(ref str1, queue);
+                if (str1 == "")
+                {
+                    printerStaTxt.Text = "可用";
+                }
+                else
+                {
+                    printerStaTxt.Text = str1;
+                }
+                ps.Dispose();
+                queue.Dispose();
             }
             catch
             {
                 printerStaTxt.Text = "打印服务未启动";
             }
-            
+
         }
         /// <summary>
         /// 广告刷新方法
@@ -210,37 +245,97 @@ namespace printerFinal
         /// <param name="e"></param>
         private void adtimer_Tick(object sender, EventArgs e)
         {
-            if (adList.Count>0)
+            if (adList.Count > 0)
             {
-                    if (adnum >= adList.Count)
-                    {
-                        adnum = 0;
-                        AdStruct adstruct = new AdStruct();
-                        adstruct = adList[adnum];
-                        adwin.Source = new BitmapImage(new Uri(adstruct.url));
-                        adtimer.Interval = TimeSpan.FromSeconds(adstruct.adStopTime);
-                        adnum++;
-                    }
-                    else
-                    {
-                        AdStruct adstruct = new AdStruct();
-                        adstruct = adList[adnum];
-                        adwin.Source = new BitmapImage(new Uri(adstruct.url));
-                        adtimer.Interval = TimeSpan.FromSeconds(adstruct.adStopTime);
-                        adnum++;
-                    }
+                if (adnum >= adList.Count)
+                {
+                    adnum = 0;
+                    AdStruct adstruct = new AdStruct();
+                    adstruct = adList[adnum];
+                    adwin.Source = new BitmapImage(new Uri(adstruct.url));
+                    adtimer.Interval = TimeSpan.FromSeconds(adstruct.adStopTime);
+                    adnum++;
+                }
+                else
+                {
+                    AdStruct adstruct = new AdStruct();
+                    adstruct = adList[adnum];
+                    adwin.Source = new BitmapImage(new Uri(adstruct.url));
+                    adtimer.Interval = TimeSpan.FromSeconds(adstruct.adStopTime);
+                    adnum++;
+                }
             }
             else
             {
                 Dictionary<string, string> dic = new Dictionary<string, string>();
                 dic.Add("code", ConfigurationManager.AppSettings["machineCode"]);
                 dic.Add("universityCode", ConfigurationManager.AppSettings["universityCode"]);
-                adList = getAdList(ConfigurationManager.AppSettings["ad_list"],dic);
+                Dispatcher.BeginInvoke(new GetAdListMethod(getAdList), DispatcherPriority.ApplicationIdle, ConfigurationManager.AppSettings["ad_list"], dic);
                 if (adList == null)
                 {
                     adwin.Source = new BitmapImage(new Uri("/Resources/picture/adBg.png", UriKind.Relative));
                 }
-                adtimer.Interval = TimeSpan.FromSeconds(3);
+                adtimer.Interval = TimeSpan.FromSeconds(10);
+            }
+        }
+        /// <summary>
+        /// 打印机状态检查
+        /// </summary>
+        /// <param name="statusReport"></param>
+        /// <param name="pq"></param>
+        void SpotTroubleUsingQueueAttributes(ref String statusReport, PrintQueue pq)
+        {
+            if ((pq.QueueStatus & PrintQueueStatus.PaperProblem) == PrintQueueStatus.PaperProblem)
+            {
+                statusReport = statusReport + "Has a paper problem. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.NoToner) == PrintQueueStatus.NoToner)
+            {
+                statusReport = statusReport + "Is out of toner. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.DoorOpen) == PrintQueueStatus.DoorOpen)
+            {
+                statusReport = statusReport + "Has an open door. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.Error) == PrintQueueStatus.Error)
+            {
+                statusReport = statusReport + "Is in an error state. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.NotAvailable) == PrintQueueStatus.NotAvailable)
+            {
+                statusReport = statusReport + "Is not available. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.Offline) == PrintQueueStatus.Offline)
+            {
+                statusReport = statusReport + "Is off line. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.OutOfMemory) == PrintQueueStatus.OutOfMemory)
+            {
+                statusReport = statusReport + "Is out of memory. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.PaperOut) == PrintQueueStatus.PaperOut)
+            {
+                statusReport = statusReport + "Is out of paper. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.OutputBinFull) == PrintQueueStatus.OutputBinFull)
+            {
+                statusReport = statusReport + "Has a full output bin. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.PaperJam) == PrintQueueStatus.PaperJam)
+            {
+                statusReport = statusReport + "Has a paper jam. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.Paused) == PrintQueueStatus.Paused)
+            {
+                statusReport = statusReport + "Is paused. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.TonerLow) == PrintQueueStatus.TonerLow)
+            {
+                statusReport = statusReport + "Is low on toner. ";
+            }
+            if ((pq.QueueStatus & PrintQueueStatus.UserIntervention) == PrintQueueStatus.UserIntervention)
+            {
+                statusReport = statusReport + "Needs user intervention. ";
             }
         }
         #endregion
@@ -249,7 +344,7 @@ namespace printerFinal
         {
             InitializeComponent();
         }
-        
+
         /// <summary>
         /// 退回主程序
         /// </summary>
@@ -281,25 +376,25 @@ namespace printerFinal
             unName.Text = ConfigurationManager.AppSettings["unName"];
             unEName.Text = ConfigurationManager.AppSettings["unEName"];
 
-            dtimer = new System.Windows.Threading.DispatcherTimer();
+            stat.line = false;
 
+            dtimer = new System.Windows.Threading.DispatcherTimer();
             //每100秒刷新一次
             dtimer.Interval = TimeSpan.FromSeconds(100);
             dtimer.Tick += dtimer_Tick;
             dtimer.Start();
 
             //string str1 = BLL.HttpBLL.GetResponseString(BLL.HttpBLL.CreatePostHttpResponse("", null));
-            
-
-            adtimer = new System.Windows.Threading.DispatcherTimer();
-            adtimer.Interval = TimeSpan.FromSeconds(1);
-            adtimer.Tick += adtimer_Tick;
-            adtimer.Start();
 
             stadtimer = new System.Windows.Threading.DispatcherTimer();
             stadtimer.Interval = TimeSpan.FromSeconds(3);
             stadtimer.Tick += stadtimer_Tick;
             stadtimer.Start();
+
+            adtimer = new System.Windows.Threading.DispatcherTimer();
+            adtimer.Interval = TimeSpan.FromSeconds(1);
+            adtimer.Tick += adtimer_Tick;
+            adtimer.Start();
 
             this.KeyDown += ModifyPrice_KeyDown;
             fram.Content = null;
@@ -315,31 +410,31 @@ namespace printerFinal
         {
             if (!stat.line)
             {
-                MessageBox.Show("网络问题", "对不起网络不可用");
+                messgeBoxBll.Show("网络问题", "对不起网络不可用，请确认网络连接后再试");
                 return false;
             }
             if (stat.stat != "正常")
             {
-                MessageBox.Show("机器已被服务器禁止使用", stat.stat);
+                messgeBoxBll.Show("机器已被禁止", "由于服务器问题本台机器现在不可用" + stat.stat);
                 return false;
             }
 
             //稍后再说
-            if (printerStaTxt.Text != "None" || ConfigurationManager.AppSettings["printerStatus"]!="正常")
+            if (printerStaTxt.Text != "None" || ConfigurationManager.AppSettings["printerStatus"] != "正常")
             {
-                MessageBox.Show("打印机问题", "对不起打印机不可用");
+                messgeBoxBll.Show("打印机问题", "对不起打印机现在有问题，请更换机器");
                 return false;
             }
 
             if (int.Parse(pageRemain.Text) < 30)
             {
-                MessageBox.Show("纸张问题", "抱歉剩余纸张过少，请更换机器");
+                messgeBoxBll.Show("纸张问题", "抱歉剩余纸张过少，请更换机器");
                 return false;
             }
             int result = preTextTest(textBox1);
             if (result == 1)
             {
-                MessageBox.Show("输入问题", "请正确输入学号和验证码");
+                messgeBoxBll.Show("输入问题", "请正确输入您的学号和验证码");
                 return false;
             }
             return true;
@@ -358,18 +453,21 @@ namespace printerFinal
                 return;
             }
 
+            //清除打印机内残余任务
             PrintBLL printbll = new PrintBLL();
             printbll.ClearJobs();
 
+            //停止此界面的计时器
             dtimer.Stop();
             adtimer.Stop();
             stadtimer.Stop();
 
-            App.user.Name = textBox.Text;
-            App.user.PassWord = textBox1.Text;
-            App.user.role = 1;
+            //获取输入信息
+            App.user.Name = textBox.Text; //用户名
+            App.user.PassWord = textBox1.Text; //密码
+            App.user.role = 1; //权限
 
-            List<detail_m> details = getPrintJobList();
+            List<detail_m> details = getPrintJobList(); //从后台得到数据
 
             if (details != null && details.Count > 0)
             {
@@ -382,7 +480,7 @@ namespace printerFinal
                     string url = ConfigurationManager.AppSettings[a];
 
                     App.psta.Count += detail.printNum;
-                    App.psta.jobstype += Enum.GetName(typeof(Jobs), detail.printTypeId)+" ";
+                    App.psta.jobstype += Enum.GetName(typeof(Jobs), detail.printTypeId) + " ";
 
                     if (url != null)
                     {
@@ -390,10 +488,10 @@ namespace printerFinal
 
                         jsonbll.jsonToJobject(detail.printContent, out jo);
                         jsonbll.jsonToJobject(jo["data"].ToString(), out jo);
-                        int b=getDoc(url, a, jo, Enum.GetName(typeof(Jobs), detail.printTypeId), detail.printNum);
-                        if(b==1)
+                        int b = getDoc(url, a, jo, Enum.GetName(typeof(Jobs), detail.printTypeId), detail.printNum);
+                        if (b == 1)
                         {
-                            MessageBox.Show("请联系管理员检查配置有无相应模版或其他错误","无法加载模板");
+                            messgeBoxBll.Show("无法加载模板","请联系管理员检查配置有无相应模版或其他错误");
                             dtimer.Start();
                             adtimer.Start();
                             stadtimer.Start();
@@ -405,18 +503,21 @@ namespace printerFinal
                         dtimer.Start();
                         adtimer.Start();
                         stadtimer.Start();
-                        MessageBox.Show("请联系管理员检查配置有无相应模版或其他错误","无法加载模板");                        
+                        messgeBoxBll.Show("无法加载模板","请联系管理员检查配置有无相应模版或其他错误" );
                         return;
                     }
                 }
-               
+
                 PrintingPage ppg = new PrintingPage();
                 ppg.Owner = this;
                 ppg.Show();
             }
             else
             {
-                MessageBox.Show("您并无打印订单，或学号和验证码有误","订单获取失败");
+                dtimer.Start();
+                adtimer.Start();
+                stadtimer.Start();
+                messgeBoxBll.Show( "订单获取失败","您并无打印订单，或学号和验证码有误");
             }
         }
         /// <summary>
@@ -427,48 +528,28 @@ namespace printerFinal
         /// <param name="data"></param>
         private int getDoc(string url, string type, JObject data, string name, int num)
         {
-            //PrintDialog pd = new PrintDialog();
             PrintDialog pd = new PrintDialog();
             PrintBLL pl = new PrintBLL();
             pl.SetPrintProperty(pd);
 
-            if (type == "CJD")
+            PrintBLL printbll = new PrintBLL();
+
+            FlowDocument doc = printbll.LoadDocument(type, url, data);
+
+            if (doc != null)
             {
-                FlowDocument doc = BLL.PrintBLL.loadSorceDocument(url, data);
+                doc.PageHeight = pd.PrintableAreaHeight;
+                doc.PageWidth = pd.PrintableAreaWidth;
+                doc.PagePadding = new Thickness(50);
+                doc.ColumnGap = 0;
+                doc.ColumnWidth = pd.PrintableAreaWidth;
 
-                if (doc != null)
-                {
-                    doc.PageHeight = pd.PrintableAreaHeight;
-                    doc.PageWidth = pd.PrintableAreaWidth;
-                    doc.PagePadding = new Thickness(50);
-                    doc.ColumnGap = 0;
-                    doc.ColumnWidth = pd.PrintableAreaWidth;
-
-                    Dispatcher.BeginInvoke(new DoPrintMethod(DoPrint), DispatcherPriority.ApplicationIdle, pd, ((IDocumentPaginatorSource)doc).DocumentPaginator, name, num);
-                    return 0;
-                }
-                else
-                {
-                    return 1;
-                }
+                Dispatcher.BeginInvoke(new DoPrintMethod(DoPrint), DispatcherPriority.ApplicationIdle, pd, ((IDocumentPaginatorSource)doc).DocumentPaginator, name, num);
+                return 0;
             }
-            else //其他不需要动态生成文档
+            else
             {
-                FlowDocument doc = BLL.PrintBLL.LoadDocument(url, data);
-                if (doc != null)
-                {
-                    doc.PageHeight = pd.PrintableAreaHeight;
-                    doc.PageWidth = pd.PrintableAreaWidth;
-                    doc.PagePadding = new Thickness(50);
-                    doc.ColumnGap = 0;
-                    doc.ColumnWidth = pd.PrintableAreaWidth;
-                    Dispatcher.BeginInvoke(new DoPrintMethod(DoPrint), DispatcherPriority.ApplicationIdle, pd, ((IDocumentPaginatorSource)doc).DocumentPaginator, name, num);
-                    return 0;
-                }
-                else
-                {
-                    return 1;
-                }
+                return 1;
             }
         }
         /// <summary>
@@ -478,10 +559,10 @@ namespace printerFinal
         /// <param name="paginator"></param>
         /// <param name="name"></param>
         /// <param name="num"></param>
-        private void DoPrint(PrintDialog pdlg, DocumentPaginator paginator, string name,int num)
+        private void DoPrint(PrintDialog pdlg, DocumentPaginator paginator, string name, int num)
         {
-            //for(int i=0;i<num;i++)                
-                pdlg.PrintDocument(paginator, name);
+            for(int i=0;i<num;i++)                
+            pdlg.PrintDocument(paginator, name);
         }
         /// <summary>
         /// 得到打印信息新
@@ -575,7 +656,7 @@ namespace printerFinal
             }
             else
             {
-                MessageBox.Show("出错", "没有可打印的文件类型，请检查网络，联系管理员");
+                messgeBoxBll.Show("出错", "没有可打印的文件类型，请检查网络，联系管理员");
             }
         }
         #endregion
@@ -618,7 +699,7 @@ namespace printerFinal
             able = int.TryParse(tb.Text.ToString(), out result);
             if (!able)
             {
-                MessageBox.Show("输入格式错误", "输入格式错误请检查输入为正确数字");
+                messgeBoxBll.Show("输入格式错误", "输入格式错误请检查输入为正确数字");
                 return 1;
             }
             return 0;

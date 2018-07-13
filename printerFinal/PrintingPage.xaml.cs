@@ -183,11 +183,14 @@ namespace printerFinal
         void dtimer_Tick(object sender, EventArgs e)
         {
             timenum++;
+
             PrintBLL printbll = new PrintBLL();
+            //PrintServer ps = new PrintServer();
+            //PrintQueue queue = ps.GetPrintQueue(ConfigurationManager.AppSettings["printer"]);
 
-            PrintServer ps = new PrintServer();
-            PrintQueue queue = ps.GetPrintQueue(ConfigurationManager.AppSettings["printer"]);
+            //LocalPrintServer lps = new LocalPrintServer();
 
+            PrintQueue queue = LocalPrintServer.GetDefaultPrintQueue();
             printbll.GetJobs(ConfigurationManager.AppSettings["printer"]);
 
             string str = getStatus();
@@ -200,7 +203,7 @@ namespace printerFinal
                     
                     closeThis();
                 }
-                ps.Dispose();
+                //ps.Dispose();
                 queue.Dispose();
                 return;
             }
@@ -222,7 +225,7 @@ namespace printerFinal
                 }
                 num = 0;
                 nowCountText.Text = (App.psta.Count - preJobNum).ToString();
-                ps.Dispose();
+                //ps.Dispose();
                 queue.Dispose();
                 return;
             }
@@ -231,7 +234,7 @@ namespace printerFinal
             {
                 progress.Value = 100;
                 num++;
-                ps.Dispose();
+                //ps.Dispose();
                 queue.Dispose();
                 if (num >= 3)
                 {
@@ -318,9 +321,8 @@ namespace printerFinal
 
             this.DataContext = App.psta;
             dtimer = new System.Windows.Threading.DispatcherTimer();
-
             //每3秒刷新一次
-            dtimer.Interval = TimeSpan.FromSeconds(2);
+            dtimer.Interval = TimeSpan.FromSeconds(20);
             dtimer.Tick += dtimer_Tick;
             dtimer.Start();
         }

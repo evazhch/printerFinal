@@ -13,9 +13,7 @@ namespace printerFinal.BLL
 {
     class PrintBLL
     {
-        JSONBLL jsonbll = new JSONBLL();
-
-        
+        JSONBLL jsonbll = new JSONBLL();        
         #region 加载流文档方法族
         /// <summary>
         /// 加载流文档
@@ -23,7 +21,67 @@ namespace printerFinal.BLL
         /// <param name="strTmplName">流文档的路径</param>
         /// <param name="data">流文档的数据</param>
         /// <returns></returns>
-        public static FlowDocument LoadDocument(string strTmplName, JObject data)
+        /// 
+        public FlowDocument LoadDocument(string type,string strTmplName, JObject data)
+        {
+            switch (type)
+            {
+                case "CJD": return loadSorceDocument(strTmplName, data); //成绩单
+                case "XJZM": return loadStutasDocument(strTmplName, data); //学籍证明
+                case "SXW":return loadSorceDocument(strTmplName, data); //双学位成绩单
+                case "CGCJ": return loadCGSorceDocument(strTmplName, data);  //出国成绩单
+                default: return loadSimpleDocument(strTmplName, data); //其他类型
+            }
+        }
+        /// <summary>
+        /// 简单流文档模板加载
+        /// </summary>
+        /// <param name="strTmplName">流文档的路径</param>
+        /// <param name="data">流文档要填写的数据</param>
+        /// <returns></returns>
+        public FlowDocument loadSimpleDocument(string strTmplName, JObject data)
+        {
+            try
+            {
+                //读取文档
+                FileStream xamlFile = new FileStream(strTmplName, FileMode.Open, FileAccess.Read);
+                FlowDocument doc = XamlReader.Load(xamlFile) as FlowDocument;
+                xamlFile.Dispose();
+
+                //生成打印时间
+                DateTime now = DateTime.Now;
+                data.Add("printDate", now.ToString("yyyy/MM/dd"));
+                //性别用语
+                if (data["sex"] != null)
+                {
+                    if (data["sex"].ToString() == "男")
+                    {
+                        data.Add("heorshe", "he");
+                        data.Add("hisorher", "his");
+                    }
+                    else
+                    {
+                        data.Add("heorshe", "she");
+                        data.Add("hisorher", "her");
+                    }
+                }
+                //绑定数据
+                doc.DataContext = data;
+                return doc;
+            }
+            catch (Exception ex)
+            {
+                messgeBoxBll.Show("模板加载出错", ex.Message);
+                return null;
+            }
+        }
+        /// <summary>
+        /// 学籍加载
+        /// </summary>
+        /// <param name="strTmplName">文档路径</param>
+        /// <param name="data">要填写的数据（姓名，学号。。。。）</param>
+        /// <returns></returns>
+        public FlowDocument loadStutasDocument(string strTmplName, JObject data)
         {
             try
             {
@@ -31,19 +89,46 @@ namespace printerFinal.BLL
                 FlowDocument doc = XamlReader.Load(xamlFile) as FlowDocument;
                 xamlFile.Dispose();
 
-                doc.PagePadding = new Thickness(50);
-                //data.Add("autograph", App.set.code);
+                //区分本科，专科，毕业
+                if (data["educate_gradation"].ToString()=="本科")
+                {
+                    doc.Blocks.Remove(doc.FindName("biye") as Section);
+                    doc.Blocks.Remove(doc.FindName("zhuanke") as Section);
+                }
+                else if(data["educate_gradation"].ToString() == "专科")
+                {
+                    doc.Blocks.Remove(doc.FindName("benke") as Section);
+                    doc.Blocks.Remove(doc.FindName("biye") as Section);
+                }
+                else if (data["educate_gradation"].ToString() == "")
+                {
+                    doc.Blocks.Remove(doc.FindName("benke") as Section);
+                    doc.Blocks.Remove(doc.FindName("zhuanke") as Section);
+                }
+
+
+                DateTime now = DateTime.Now;
+                data.Add("printDate", now.ToString("yyyy/MM/dd"));
+
+                if (data["sex"].ToString() == "男")
+                {
+                    data.Add("heorshe", "he");
+                    data.Add("hisorher", "his");
+                }
+                else
+                {
+                    data.Add("heorshe", "she");
+                    data.Add("hisorher", "her");
+                }
 
                 doc.DataContext = data;
-                
                 return doc;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("模板加载出错", ex.Message);
+                messgeBoxBll.Show("模板加载出错", ex.Message);
                 return null;
             }
-            
         }
         /// <summary>
         /// 成绩单加载
@@ -51,9 +136,9 @@ namespace printerFinal.BLL
         /// <param name="strTmplName"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static FlowDocument loadSorceDocument(string strTmplName, JObject data)
+        public FlowDocument loadSorceDocument(string strTmplName, JObject data)
         {
-            int num=0;
+            int num = 0;
             JArray ja;
             try
             {
@@ -63,9 +148,6 @@ namespace printerFinal.BLL
 
                 xamlFile.Dispose();
 
-                //doc.PageWidth = 816;
-                //doc.PageHeight = 1150;
-                //doc.PagePadding = new Thickness(50);
                 JSONBLL jsonbll = new JSONBLL();
 
                 string birth = data["birthday"].ToString();
@@ -77,8 +159,8 @@ namespace printerFinal.BLL
 
                 DateTime now = DateTime.Now;
 
-                data.Add("now", now.ToString("yyyy/MM/dd HH:mm:ss"));
-               
+                data.Add("printDate", now.ToString("yyyy/MM/dd"));
+
                 TableRowGroup group = doc.FindName("rowsDetails") as TableRowGroup;
                 Style styleCell = doc.Resources["BorderedCell"] as Style;
                 Style styleCell1 = doc.Resources["BorderedCell1"] as Style;
@@ -105,8 +187,8 @@ namespace printerFinal.BLL
                     TableRow row = new TableRow();
 
                     TableCell cell = new TableCell(new Paragraph(new Run(" ")));
-                    cell.Style = styleCell1;
-                    row.Cells.Add(cell);
+                    //cell.Style = styleCell1;
+                    //row.Cells.Add(cell);
                     cell = new TableCell(new Paragraph(new Run(aa["year_name"].ToString())));
                     cell.Style = styleCell1;
                     row.Cells.Add(cell);
@@ -125,15 +207,8 @@ namespace printerFinal.BLL
 
                         TableRow row1 = new TableRow();
 
-                        cell = new TableCell(new Paragraph(new Run("  ")));
-                        cell.Style = styleCell1;
-                        row1.Cells.Add(cell);
                         cell = new TableCell(new Paragraph(new Run(jo1["course_name"].ToString())));
                         cell.Style = styleCell1;
-                        row1.Cells.Add(cell);
-
-                        cell = new TableCell(new Paragraph(new Run(jo1["mark"].ToString())));
-                        cell.Style = styleCell;
                         row1.Cells.Add(cell);
 
                         cell = new TableCell(new Paragraph(new Run(jo1["credit_hour"].ToString())));
@@ -144,21 +219,21 @@ namespace printerFinal.BLL
                         cell.Style = styleCell;
                         row1.Cells.Add(cell);
 
+                        cell = new TableCell(new Paragraph(new Run(jo1["mark"].ToString())));
+                        cell.Style = styleCell;
+                        row1.Cells.Add(cell);
+
+                        cell = new TableCell(new Paragraph(new Run("")));
+                        cell.Style = styleCell;
+                        row1.Cells.Add(cell);
+
                         if (i + 1 < ja1.Count)
                         {
                             string str2 = ja1[i + 1].ToString();
                             jsonbll.jsonToJobject(str2, out jo2);
 
-                            cell = new TableCell(new Paragraph(new Run("  ")));
-                            cell.Style = styleCell1;
-                            row1.Cells.Add(cell);
-
                             cell = new TableCell(new Paragraph(new Run(jo2["course_name"].ToString())));
                             cell.Style = styleCell1;
-                            row1.Cells.Add(cell);
-
-                            cell = new TableCell(new Paragraph(new Run(jo2["mark"].ToString())));
-                            cell.Style = styleCell;
                             row1.Cells.Add(cell);
 
                             cell = new TableCell(new Paragraph(new Run(jo2["credit_hour"].ToString())));
@@ -166,6 +241,14 @@ namespace printerFinal.BLL
                             row1.Cells.Add(cell);
 
                             cell = new TableCell(new Paragraph(new Run(jo2["course_type"].ToString())));
+                            cell.Style = styleCell;
+                            row1.Cells.Add(cell);
+
+                            cell = new TableCell(new Paragraph(new Run(jo2["mark"].ToString())));
+                            cell.Style = styleCell;
+                            row1.Cells.Add(cell);
+
+                            cell = new TableCell(new Paragraph(new Run("")));
                             cell.Style = styleCell;
                             row1.Cells.Add(cell);
                         }
@@ -180,7 +263,7 @@ namespace printerFinal.BLL
                         {
                             group = doc.FindName("rowsDetails2") as TableRowGroup;
                         }
-                        else if (num <= 45)
+                        else if (num < 45)
                         {
                             group = doc.FindName("rowsDetails") as TableRowGroup;
                         }
@@ -213,9 +296,219 @@ namespace printerFinal.BLL
 
                 return doc;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("模板加载出错", ex.Message);
+                messgeBoxBll.Show("模板加载出错", ex.Message);
+                return null;
+            }
+        }
+        /// <summary>
+        /// 出国成绩单加载
+        /// </summary>
+        /// <param name="strTmplName"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public FlowDocument loadCGSorceDocument(string strTmplName, JObject data)
+        {
+            float num = 0;
+            JArray ja;
+            JArray ja1;
+            JObject ja2;
+            try
+            {
+                FileStream xamlFile = new FileStream(strTmplName, FileMode.Open, FileAccess.Read);
+
+                FlowDocument doc = XamlReader.Load(xamlFile) as FlowDocument;
+
+                xamlFile.Dispose();
+
+                JSONBLL jsonbll = new JSONBLL();
+
+                jsonbll.jobjectDisassem(data, "array", out ja);//去一下Json层
+                jsonbll.jobjectDisassem(data, "array_transcript", out ja1);
+                //string strr = ja1[0].ToString();
+                jsonbll.jsonToJobject(ja1[0].ToString(),out ja2);
+
+                ja2.Add("length_of_schooling", data["length_of_schooling"].ToString());
+
+                DateTime dt= DateTime.Parse(ja2["birthday"].ToString());
+                ja2["birthday"] = dt.ToString("yyyy-MM-dd");
+                dt = DateTime.Parse(ja2["startCollegeTime"].ToString());
+                ja2["startCollegeTime"] = dt.ToString("yyyy-MM-dd");
+                ja2.Add("UniversityEnglishName", data["UniversityEnglishName"].ToString());
+
+                //jsonbll.jobjectDisassem(data, "array_transcript", out ja2);//去一下Json层
+
+                if (ja2["sex"].ToString() == "男")
+                {
+                    ja2.Add("sexE", "Male");
+                }
+                else
+                {
+                    ja2.Add("sexE", "Female");
+                }
+
+                DateTime now = DateTime.Now;
+
+                ja2.Add("printDate", now.ToString("yyyy/MM/dd"));
+
+                TableRowGroup group = doc.FindName("rowsDetails") as TableRowGroup;
+                Style styleCell = doc.Resources["BorderedCell"] as Style;
+                Style styleCell1 = doc.Resources["BorderedCell1"] as Style;
+                string preyear = "";
+
+                //var nimabi = doc.FindName("section") as Section;
+
+                int rowsnum = 0;
+
+                for(int i=0;i<ja.Count;)
+                {
+                    //var table= doc.FindName("table") as Table;
+                    //table.DataContext = ja;
+                    //选择行族
+                    if (rowsnum >= 25 && rowsnum < 50)
+                    {
+                        group = doc.FindName("rowsDetails1") as TableRowGroup;
+                    }
+                    else if (rowsnum >= 50 && i < 75)
+                    {
+                        group = doc.FindName("rowsDetails2") as TableRowGroup;
+                    }
+                    else if (rowsnum >= 100)
+                    {
+                        group = doc.FindName("rowsDetails3") as TableRowGroup;
+                    }
+                    else if (i < 25)
+                    {
+                        group = doc.FindName("rowsDetails") as TableRowGroup;
+                    }
+
+                    string a = ja[i].ToString();
+                    JObject aa;
+                    jsonbll.jsonToJobject(a, out aa);
+                    
+                    //判读是否加学年
+                    TableRow row = new TableRow();
+                    TableCell cell = new TableCell(new Paragraph(new Run(" ")));
+
+                    if (preyear == "" || preyear != aa["termYear"].ToString())
+                    {
+                        preyear = aa["termYear"].ToString();
+                        cell = new TableCell(new Paragraph(new Run("Academic Year " + aa["termYear"].ToString() + "-" + (int.Parse(aa["termYear"].ToString()) + 1).ToString())));
+                        cell.Style = styleCell1;
+                        row.Cells.Add(cell);
+                        group.Rows.Add(row);
+                        rowsnum++;
+                    }
+                    //添加成绩
+                    TableRow row1 = new TableRow();
+
+                    cell = new TableCell(new Paragraph(new Run(ja[i]["courseName"].ToString() +"\n"+ ja[i]["englishName"].ToString())));
+                    cell.Style = styleCell1;
+                    row1.Cells.Add(cell);
+
+                    cell = new TableCell(new Paragraph(new Run((ja[i]["creditHour"].ToString()))));
+                    num += float.Parse((ja[i]["creditHourPoint"].ToString()));
+                    cell.Style = styleCell;
+                    row1.Cells.Add(cell);
+
+                    cell = new TableCell(new Paragraph(new Run(ja[i]["mark"].ToString())));
+                    cell.Style = styleCell;
+                    row1.Cells.Add(cell);
+
+                    if ((ja[i]["termName"].ToString()).Length > 13)
+                    {
+                        cell = new TableCell(new Paragraph(new Run("Resit")));
+                        cell.Style = styleCell;
+                        row1.Cells.Add(cell);
+                    }
+                    else
+                    {
+                        cell = new TableCell(new Paragraph(new Run(" ")));
+                        cell.Style = styleCell;
+                        row1.Cells.Add(cell);
+                    }
+                    if (i + 1 < ja.Count)
+                    {
+                        string a1 = ja[i+1].ToString();
+                        JObject aa1;
+                        jsonbll.jsonToJobject(a1, out aa1);
+
+                        if (preyear == "" || preyear != aa1["termYear"].ToString())
+                        {
+                            group.Rows.Add(row1);
+                            rowsnum++;
+                            i = i + 1;
+                        }
+                        else
+                        {
+                            cell = new TableCell(new Paragraph(new Run(ja[i+1]["courseName"].ToString() + "\n" + ja[i+1]["englishName"].ToString())));
+                            cell.Style = styleCell1;
+                            row1.Cells.Add(cell);
+
+                            cell = new TableCell(new Paragraph(new Run((ja[i+1]["creditHour"].ToString()))));
+                            num += float.Parse((ja[i]["creditHourPoint"].ToString()));
+                            cell.Style = styleCell;
+                            row1.Cells.Add(cell);
+
+                            cell = new TableCell(new Paragraph(new Run(ja[i+1]["mark"].ToString())));
+                            cell.Style = styleCell;
+                            row1.Cells.Add(cell);
+
+                            if ((ja[i+1]["termName"].ToString()).Length > 13)
+                            {
+                                cell = new TableCell(new Paragraph(new Run("Resit")));
+                                cell.Style = styleCell;
+                                row1.Cells.Add(cell);
+                            }
+                            else
+                            {
+                                cell = new TableCell(new Paragraph(new Run(" ")));
+                                cell.Style = styleCell;
+                                row1.Cells.Add(cell);
+                            }
+
+                            group.Rows.Add(row1);
+                            rowsnum++;
+                            i = i + 2;
+                        }
+                    }                  
+                }
+
+                //分页管理
+
+                if (rowsnum > 25)
+                {
+                    ja2.Add("pagenum", ja.Count /50 + 1);
+                }
+                else
+                {
+                    ja2.Add("pagenum", 1);
+                }
+                if (rowsnum / 25 == 2 && rowsnum > 50)
+                {
+                    doc.Blocks.Remove(doc.FindName("section3") as Section);
+                }
+                else if (rowsnum / 25 == 1 && rowsnum > 25)
+                {
+                    doc.Blocks.Remove(doc.FindName("section2") as Section);
+                    doc.Blocks.Remove(doc.FindName("section3") as Section);
+                }
+                else if (rowsnum / 25 == 0 || rowsnum == 25)
+                {
+                    doc.Blocks.Remove(doc.FindName("section1") as Section);
+                    doc.Blocks.Remove(doc.FindName("section2") as Section);
+                    doc.Blocks.Remove(doc.FindName("section3") as Section);
+                }
+                ja2.Add("passedCredits", num);
+
+                doc.DataContext = ja2;
+
+                return doc;
+            }
+            catch (Exception ex)
+            {
+                messgeBoxBll.Show("模板加载出错", ex.Message);
                 return null;
             }
         }
@@ -336,7 +629,6 @@ namespace printerFinal.BLL
             //ReportAvailabilityAtThisTime(ref statusReport, pq);
         }
         #endregion
-
 
         /// <summary>
         /// 设置打印格式

@@ -103,10 +103,10 @@
                         Height="271"
                         Style="{DynamicResource roundButtonTemplate}" Canvas.Left="1064" Canvas.Top="141"
                         />
-                <TextBlock Name="netLine" Foreground="Green" FontSize="30" Canvas.Left="0" Canvas.Top="0">网络已连接</TextBlock>
-
-                <TextBlock  Foreground="Green" FontSize="30" Canvas.Left="0" Canvas.Top="30"><Run>剩余纸张:</Run><Run Foreground="Red" Name="pageRemain"></Run></TextBlock>
-                <TextBlock  Foreground="Green" FontSize="30" Canvas.Left="0" Canvas.Top="60"><Run>打印机:</Run><Run Foreground="Red" Name="printerStaTxt"></Run></TextBlock>
+                <TextBlock Name="netLine" Foreground="Green" FontSize="30" Canvas.Top="472">网络已连接</TextBlock>
+                <TextBlock  Foreground="Green" FontSize="30" Canvas.Top="408"><Run>服务器:</Run><Run Foreground="Green" Name="serverLine">正常</Run></TextBlock>
+                <TextBlock  Foreground="Green" FontSize="30" Canvas.Left="280" Canvas.Top="472"><Run>剩余纸张:</Run><Run Foreground="Green" Name="pageRemain"></Run></TextBlock>
+                <TextBlock  Foreground="Green" FontSize="30" Canvas.Left="578" Canvas.Top="472"><Run>打印机:</Run><Run Foreground="Green" Name="printerStaTxt"></Run></TextBlock>
 
             </Canvas>
         </Viewbox>

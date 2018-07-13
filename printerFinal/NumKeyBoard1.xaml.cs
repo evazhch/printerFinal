@@ -98,7 +98,8 @@ namespace printerFinal
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            //IsChecked = false;
+            if (tb.Text.Length > 0)
+                tb.Text = tb.Text.Substring(0, tb.Text.Length - 1);
         }
     }
 }

@@ -13,7 +13,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
             <Style x:Key="LargeTileStyle"
                    TargetType="Controls:Tile">
                 <Setter Property="Width"
@@ -139,8 +138,8 @@
                     <Canvas Grid.Column="0"  Width="440" Height="480" Name="stulog" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Image Source="Resources\picture\land.png" Width="440" Height="480" Canvas.Top="0" Canvas.Left="0" Stretch="Fill"></Image>
 
-                        <TextBox  Background="White" BorderThickness="0" Name="textBox" Width="205" Canvas.Left="94" Canvas.Top="164" GotFocus="textBox_GotFocus" FontSize="23"/>
-                        <TextBox  Background="White" BorderThickness="0" Name="textBox1" Width="205" Canvas.Left="94" Canvas.Top="257" GotFocus="textBox1_GotFocus" FontSize="23" />
+                        <TextBox  Background="White" BorderThickness="0" Name="textBox" Width="306" Canvas.Left="94" Canvas.Top="164" GotFocus="textBox_GotFocus" FontSize="23"/>
+                        <TextBox  Background="White" BorderThickness="0" Name="textBox1" Width="306" Canvas.Left="94" Canvas.Top="257" GotFocus="textBox1_GotFocus" FontSize="23" />
 
                         <Button x:Name="button" Content="登     录"  FontSize="24.5" Foreground="White" Background="#04b686" Width="345" Canvas.Left="55" Canvas.Top="350" Click="button_Click" Height="46"/>
                     </Canvas>

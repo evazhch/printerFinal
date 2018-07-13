@@ -27,9 +27,10 @@ namespace printerFinal.BLL
         public HttpWebResponse CreatePostHttpResponse(string url, IDictionary<string, string> parameters)
         {
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;//创建请求对象
+            request.Timeout = 2000;
             request.Method = "POST";//请求方式
             request.ContentType = "application/x-www-form-urlencoded";//链接类型
-                                                                      //构造查询字符串
+            //构造查询字符串
             if (!(parameters == null || parameters.Count == 0))
             {
                 StringBuilder buffer = new StringBuilder();
@@ -58,24 +59,25 @@ namespace printerFinal.BLL
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("获取服务器信息出错", ex.Message);
+                    //MessageBox.Show( ex.Message, "获取服务器信息出错");
                     return null;
                 }
             }
             try
             {
+                //获取服务器传回的信息
               return request.GetResponse() as HttpWebResponse;
             }
             catch(Exception ex)
             {
-                MessageBox.Show("获取服务器信息出错",ex.Message);
+                //MessageBox.Show(ex.Message,"获取服务器信息出错");
                 return null;
             }
         }
         /// <summary>
         /// 从HttpWebResponse对象中提取响应的数据转换为字符串
         /// </summary>
-        /// <param name="webresponse"></param>
+        /// <param name="webresponse">服务器回传的信息</param>
         /// <returns></returns>
         public string GetResponseString(HttpWebResponse webresponse)
         {
@@ -89,7 +91,7 @@ namespace printerFinal.BLL
             }
             catch(Exception ex)
             {
-                MessageBox.Show("提取字符串出错",ex.Message);
+                //MessageBox.Show(ex.Message, "提取字符串出错");
                 return null;
             }
         }
@@ -105,7 +107,7 @@ namespace printerFinal.BLL
         /// <summary>
         /// MD5加密
         /// </summary>
-        /// <param name="str"></param>
+        /// <param name="str">需要加密的字符串</param>
         /// <returns></returns>
         public string UserMd5(string str)
         {
@@ -131,6 +133,7 @@ namespace printerFinal.BLL
         /// <returns></returns>
         public string getJsonString(string secret, IDictionary<string, string> parameters)
         {
+
             Dictionary<string, string> parameters1 = parameters.OrderBy(p => p.Key).ToDictionary(p => p.Key, o => o.Value);
             string str = "";
 
@@ -152,6 +155,7 @@ namespace printerFinal.BLL
         public string updatePrintStatus(string printResualt)
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
+            //生成参数
             dic.Add("code", App.user.PassWord);
             dic.Add("universityCode", ConfigurationManager.AppSettings["universityCode"]);
             dic.Add("universityId", App.user.Name);
@@ -171,7 +175,7 @@ namespace printerFinal.BLL
             }
             catch (Exception ex)
             {
-                MessageBox.Show("上传打印结果出错", ex.Message);
+                //MessageBox.Show("上传打印结果出错", ex.Message);
                 return result;
             }
         }
@@ -195,7 +199,7 @@ namespace printerFinal.BLL
             }
             catch(Exception ex)
             {
-                MessageBox.Show("上传纸张更改出错", ex.Message);
+                //MessageBox.Show("上传纸张更改出错", ex.Message);
                 return result;
             }
         }

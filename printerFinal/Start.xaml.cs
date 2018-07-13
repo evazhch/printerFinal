@@ -22,15 +22,12 @@ namespace printerFinal
     /// </summary>
     public partial class Start : MetroWindow
     {
-        private static bool IsStart = Convert.ToBoolean(ConfigurationManager.AppSettings["IsStart"]);
+        private static bool IsStart = Convert.ToBoolean(ConfigurationManager.AppSettings["IsStart"]); //是否开机自启
         public DispatcherTimer dtimer;
-
-
-
         public Start()
         {
-            this.UseNoneWindowStyle = true;
-            this.IgnoreTaskbarOnMaximize = true;
+            this.UseNoneWindowStyle = true; //窗口样式
+            this.IgnoreTaskbarOnMaximize = true; //窗口大小
             InitializeComponent();
 
             //开机自启设置代码
@@ -43,8 +40,6 @@ namespace printerFinal
             //    SelfRunning(!IsStart, "PrinterThird", @"C:\Users\FZC\Desktop\PrinterThird\PrinterThird\bin\Debug\PrinterThird.exe");
             //}
         }
-
-
         /// <summary>
         /// 配置查看按钮
         /// </summary>
@@ -56,7 +51,7 @@ namespace printerFinal
             land2 ad = new land2();
             ad.state = 0;
             ad.ShowDialog();
-            this.Close();
+            //this.Close();
         }
         /// <summary>
         /// 最大化按钮事件
@@ -77,10 +72,10 @@ namespace printerFinal
             }
             else if (x1 / y1 == 4.0 / 3.0)
             {
-                //main43 mv = new main43();
-                //this.Close();
-                //mv.WindowState = WindowState.Maximized;
-                //mv.Show();
+                main43 mv = new main43();
+                this.Close();
+                mv.WindowState = WindowState.Maximized;
+                mv.Show();
             }
             else
             {
@@ -113,7 +108,7 @@ namespace printerFinal
             land2 ad = new land2();
             ad.state = 1;
             ad.ShowDialog();
-            this.Close();
+            //this.Close();
         }
         /// <summary>
         /// 加载
@@ -133,7 +128,7 @@ namespace printerFinal
             //加载键盘
             string str1 = App.set.code;
             string str2 = App.set.universityCode;
-
+            //得到焦点
             textBox_GotFocus(sender, e);
             //land ld1 = new land();
             //fram.Content = ld1;
@@ -173,7 +168,7 @@ namespace printerFinal
                 mv.WindowState = WindowState.Maximized;
                 mv.Show();
             }
-            else
+            else   //默认使用16：9
             {
                 MainWindow mv = new MainWindow();
                 this.Close();
@@ -189,7 +184,7 @@ namespace printerFinal
         /// <param name="e"></param>
         private void ModifyPrice_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.H)
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.H) //ctrl+H 打开
             {
                 dtimer.Stop();
                 SuperAdmin sa = new SuperAdmin();
@@ -197,7 +192,11 @@ namespace printerFinal
                 sa.ShowDialog();
             }
         }
-
+        /// <summary>
+        /// 确定按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_Click(object sender, RoutedEventArgs e)
         {
             if (textBox.Text == ConfigurationManager.AppSettings["adminUser"] && textBox1.Text == ConfigurationManager.AppSettings["adminPass"])
@@ -215,18 +214,30 @@ namespace printerFinal
             //PrintingPage ptpg = new PrintingPage();
             //ptpg.ShowDialog();
         }
+        /// <summary>
+        /// user获取焦点
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void textBox_GotFocus(object sender, RoutedEventArgs e)
         {
             NumKeyBoard nkb = new NumKeyBoard();
             nkb.tb = textBox;
             keyFram.Content = nkb;
         }
+        /// <summary>
+        /// userpass焦点
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void textBox1_GotFocus(object sender, RoutedEventArgs e)
         {
             NumKeyBoard nkb = new NumKeyBoard();
             nkb.tb = textBox1;
             keyFram.Content = nkb;
         }
+
+        #region 开机自启的相关操作
         /// <summary>
         /// 判断注册表键值对是否存在
         /// </summary>
@@ -305,5 +316,6 @@ namespace printerFinal
 
         //    return true;
         //}
+        #endregion
     }
 }

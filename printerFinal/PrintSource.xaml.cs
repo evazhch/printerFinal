@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using printerFinal.BLL;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -30,8 +32,8 @@ namespace printerFinal
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Start start = new Start();
-            start.Show();
+            //Start start = new Start();
+            //start.Show();
             this.Close();
         }
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -61,7 +63,40 @@ namespace printerFinal
         {
             configbll.SaveConfig("remainPageNum", slider.Value.ToString());
             App.set = new Models.SettingModel();
-            MessageBox.Show("纸张记录成功", "当前打印机剩余纸张:" + ConfigurationManager.AppSettings["remainPageNum"]);
+
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+
+            dic.Add("code", ConfigurationManager.AppSettings["code"]);
+            dic.Add("universityCode", ConfigurationManager.AppSettings["universityCode"]);
+            dic.Add("printedPageNum", ConfigurationManager.AppSettings["printedPageNum"]);
+            dic.Add("remainPageNum", ConfigurationManager.AppSettings["remainPageNum"]);
+
+            HttpBLL httpbll = new HttpBLL();
+            JSONBLL jsonbll = new JSONBLL();
+            JObject jo;
+            //得到Json字符串
+            string printstr = httpbll.GetResponseString(httpbll.CreatePostHttpResponse(ConfigurationManager.AppSettings["updatePaperAddNum"], dic));
+
+            if (printstr != null)
+            {
+                jsonbll.jsonToJobject(printstr, out jo);//得到反序列化实例JObject
+
+                if (jo["code"].ToString() == "200")
+                {
+                    MessageBox.Show( "当前打印机剩余纸张:" + ConfigurationManager.AppSettings["remainPageNum"],"纸张记录成功");
+
+                }
+                else
+                {
+                    MessageBox.Show(jo["code"].ToString()+":"+jo["msg"].ToString(), "上传失败,请重试");
+                }
+            }
+            else
+            {
+                MessageBox.Show("上传失败,请重试");
+            }
+
+            
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro.Controls;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -18,10 +19,12 @@ namespace printerFinal
     /// <summary>
     /// SuperAdmin.xaml 的交互逻辑
     /// </summary>
-    public partial class SuperAdmin : Window
+    public partial class SuperAdmin : MetroWindow
     {
         public SuperAdmin()
         {
+            this.UseNoneWindowStyle = true; //窗口样式
+            this.IgnoreTaskbarOnMaximize = true; //窗口大小
             InitializeComponent();
         }
         BLL.ConfigBLL configbll = new BLL.ConfigBLL();
@@ -37,6 +40,7 @@ namespace printerFinal
                 m.value = ConfigurationManager.AppSettings[key];
                 list.Add(m);
             }
+            //this.DataContext = list;
             dataGrid.ItemsSource = list;
             dataGrid.IsReadOnly = false;
         }
@@ -68,6 +72,11 @@ namespace printerFinal
         {
             Start st=this.Owner as Start;
             st.dtimer.Start();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

@@ -18,9 +18,9 @@
             <TextBox Text="{Binding Path=IPposition,Mode=TwoWay}" FontSize="25" Margin="234,372,604,291" Background="Transparent" BorderThickness="0"/>
             <TextBox Text="{Binding Path=TeamviewerId,Mode=TwoWay}" FontSize="25" Margin="758,372,76,291" Background="Transparent" BorderThickness="0"/>
             <TextBox Text="{Binding Path=ContactName,Mode=TwoWay}" FontSize="25"  Margin="234,436,604,213" Background="Transparent" BorderThickness="0"/>
-            <TextBox Text="{Binding Path=ContactPhoto,Mode=TwoWay}" FontSize="25" Margin="758,442,76,213" Background="Transparent" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=ContactPhone,Mode=TwoWay}" FontSize="25" Margin="758,442,76,213" Background="Transparent" BorderThickness="0"/>
             <Button Name="savebtn" Click="savebtn_Click" Opacity="0" Margin="304,580,282,49"/>
-            <Button Opacity="0" Height="50" Width="50" Margin="1040,53,30,597" Name="closbtn" Click="closbtn_Click"></Button>
+            <Button Opacity="0" Height="50" Width="50" Margin="1040,51,30,599" Name="closbtn" Click="closbtn_Click"></Button>
         </Grid>
     </Grid>
 </Window>
